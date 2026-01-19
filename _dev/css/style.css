@@ -1,0 +1,741 @@
+/* ========================================
+   Chemistry Coloring App - Styles
+   Modern dark theme with vibrant accents
+   ======================================== */
+
+:root {
+    /* Color scheme */
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --bg-tertiary: #252542;
+    --bg-card: #2d2d4a;
+
+    --text-primary: #ffffff;
+    --text-secondary: #b8b8d0;
+    --text-muted: #6e6e8a;
+
+    --accent-primary: #6c5ce7;
+    --accent-secondary: #a29bfe;
+    --accent-success: #00b894;
+    --accent-error: #ff6b6b;
+    --accent-warning: #ffeaa7;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+    --gradient-success: linear-gradient(135deg, #00b894 0%, #55efc4 100%);
+    --gradient-error: linear-gradient(135deg, #ff6b6b 0%, #ffa8a8 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(108, 92, 231, 0.4);
+
+    /* Sizing */
+    --btn-min-size: 64px;
+    --border-radius: 16px;
+    --border-radius-sm: 8px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* ========================================
+   Reset & Base
+   ======================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   App Container
+   ======================================== */
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+/* ========================================
+   Header
+   ======================================== */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+}
+
+.header-center {
+    text-align: center;
+    flex: 1;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.page-instruction {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Navigation buttons */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: var(--btn-min-size);
+    min-height: var(--btn-min-size);
+    padding: 12px 20px;
+    background: var(--bg-tertiary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.nav-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+}
+
+.nav-btn:active {
+    transform: translateY(0);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.nav-icon {
+    font-size: 1.2rem;
+}
+
+/* ========================================
+   Main Content
+   ======================================== */
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ========================================
+   Color Palette
+   ======================================== */
+
+.color-palette {
+    width: 200px;
+    min-width: 200px;
+    background: var(--bg-secondary);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.palette-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.colors-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 3px solid transparent;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    min-height: var(--btn-min-size);
+}
+
+.color-item:hover {
+    background: var(--bg-card);
+    transform: translateX(4px);
+}
+
+.color-item.selected {
+    border-color: var(--text-primary);
+    box-shadow: var(--shadow-glow);
+    transform: scale(1.02);
+}
+
+.color-swatch {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.color-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+/* ========================================
+   Coloring Area
+   ======================================== */
+
+.coloring-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.coloring-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+.coloring-container svg {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
+/* SVG zone styles */
+.coloring-container svg .zone {
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    stroke: #333;
+    stroke-width: 2;
+}
+
+.coloring-container svg .zone:hover {
+    filter: brightness(1.1);
+    stroke-width: 3;
+}
+
+.coloring-container svg .zone.colored {
+    stroke: #222;
+}
+
+.coloring-container svg .zone.highlight-correct {
+    animation: pulse-correct 1s ease-in-out infinite;
+}
+
+.coloring-container svg .zone.highlight-wrong {
+    animation: flash-wrong 0.3s ease-in-out;
+}
+
+@keyframes pulse-correct {
+
+    0%,
+    100% {
+        stroke-width: 3;
+    }
+
+    50% {
+        stroke-width: 5;
+    }
+}
+
+@keyframes flash-wrong {
+
+    0%,
+    100% {
+        fill: inherit;
+    }
+
+    50% {
+        fill: #ff6b6b;
+    }
+}
+
+/* Progress bar */
+.progress-bar {
+    margin-top: 16px;
+    height: 32px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--gradient-success);
+    border-radius: 16px;
+    transition: width var(--transition-normal);
+    width: 0%;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+.app-footer {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px 24px;
+    background: var(--bg-secondary);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 180px;
+    min-height: var(--btn-min-size);
+    padding: 16px 32px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.check-btn {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.check-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 184, 148, 0.4);
+}
+
+.reset-btn {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.reset-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--accent-error);
+    transform: translateY(-3px);
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+}
+
+/* ========================================
+   Feedback Overlay
+   ======================================== */
+
+.feedback-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.feedback-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.feedback-message {
+    padding: 40px 60px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius);
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.8);
+    transition: transform var(--transition-normal);
+}
+
+.feedback-overlay.visible .feedback-message {
+    transform: scale(1);
+}
+
+.feedback-message.success {
+    background: var(--gradient-success);
+}
+
+.feedback-message.error {
+    background: var(--gradient-error);
+}
+
+/* ========================================
+   Page Selector Modal
+   ======================================== */
+
+.page-selector-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.page-selector-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.page-selector-modal {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 32px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.page-selector-modal h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.page-thumbnail {
+    aspect-ratio: 1;
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    text-align: center;
+}
+
+.page-thumbnail:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+}
+
+.page-thumbnail.active {
+    border-color: var(--accent-success);
+}
+
+.page-thumbnail-icon {
+    font-size: 3rem;
+    margin-bottom: 8px;
+}
+
+.page-thumbnail-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.close-modal-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.close-modal-btn:hover {
+    background: var(--bg-card);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+    .app-header {
+        padding: 12px 16px;
+    }
+
+    .page-title {
+        font-size: 1.2rem;
+    }
+
+    .nav-text {
+        display: none;
+    }
+
+    .nav-btn {
+        min-width: 56px;
+        padding: 12px;
+    }
+
+    .color-palette {
+        width: 120px;
+        min-width: 120px;
+        padding: 12px;
+    }
+
+    .color-label {
+        font-size: 0.75rem;
+    }
+
+    .color-swatch {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+
+    .action-btn {
+        min-width: 140px;
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* ========================================
+   Touch-friendly enhancements
+   ======================================== */
+
+@media (pointer: coarse) {
+
+    .color-item,
+    .nav-btn,
+    .action-btn {
+        min-height: 56px;
+    }
+
+    .coloring-container svg .zone {
+        stroke-width: 3;
+    }
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.color-item {
+    animation: fadeIn 0.3s ease-out backwards;
+}
+
+.color-item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.color-item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.color-item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.color-item:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.color-item:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.color-item:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.color-item:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.color-item:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+/* ========================================
+   Drag and Drop
+   ======================================== */
+
+.drag-indicator {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%) scale(1.2);
+    transition: transform 0.1s ease;
+    border: 3px solid white;
+}
+
+.drag-indicator.active {
+    animation: drag-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes drag-pulse {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(255, 255, 255, 0.3);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 6px rgba(255, 255, 255, 0.4);
+    }
+}
+
+.color-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+/* Highlight zone when hovering during drag */
+.zone-highlight {
+    stroke: var(--accent-primary) !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 0 8px var(--accent-primary));
+}

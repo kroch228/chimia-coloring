@@ -1,0 +1,7 @@
+node_modules/
+_dev/chemistry-ui-makeover-main/node_modules/
+_dev/chemistry-ui-makeover-main/dist/
+.DS_Store
+.env
+.idea/
+.vscode/

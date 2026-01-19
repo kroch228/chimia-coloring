@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Breaking Bad Chemistry Lab</title>
+  <meta name="description" content="Say my name. Интерактивная химическая лаборатория в стиле Breaking Bad" />
+  <meta name="author" content="Heisenberg Labs" />
+
+  <meta property="og:title" content="Breaking Bad Chemistry Lab" />
+  <meta property="og:description" content="I am the one who knocks. Изучай химию как Хайзенберг!" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@Lovable" />
+  <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <!-- Dynamic Data Loading for File Protocol -->
+  <script>
+    // Initialize global storage for custom pages
+    window.CUSTOM_PAGES = {};
+
+    // Define registerPage globally so data scripts can use it immediately
+    window.registerPage = function (data) {
+      // Ensure ID exists
+      if (!data.id) {
+        console.error("Page registered without ID", data);
+        return;
+      }
+      window.CUSTOM_PAGES[data.id] = data;
+      console.log("Registered custom page:", data.id);
+    };
+  </script>
+  <script src="js/manifest.js"></script>
+  <script>
+    // Load all data files defined in the manifest
+    if (window.DATA_MANIFEST) {
+      window.DATA_MANIFEST.forEach(function (file) {
+        document.write('<script src="data/' + file + '"><\/script>');
+      });
+    }
+  </script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

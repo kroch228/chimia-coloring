@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактор Зон — Химические Раскраски</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #252542;
+            --bg-card: #2d2d4a;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8d0;
+            --accent-primary: #6c5ce7;
+            --accent-success: #00b894;
+            --accent-error: #ff6b6b;
+            --accent-warning: #f1c40f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Tool buttons */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .tool-btn {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #eee;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-btn.active {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Main layout */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left panel - Image & Canvas */
+        .canvas-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            overflow: auto;
+            position: relative;
+        }
+
+        #editor-canvas {
+            cursor: crosshair;
+            display: block;
+        }
+
+        /* Right panel - Tools & Zones */
+        .tools-panel {
+            width: 350px;
+            background: var(--bg-secondary);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-section {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .panel-section h3 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-card);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #55efc4);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ffa8a8);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Zone list */
+        .zone-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .zone-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .zone-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .zone-item.selected {
+            border: 2px solid var(--accent-primary);
+        }
+
+        .zone-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .zone-info {
+            flex: 1;
+        }
+
+        .zone-formula {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .zone-points {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .zone-delete {
+            background: none;
+            border: none;
+            color: var(--accent-error);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px;
+        }
+
+        /* Color palette */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .color-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            background: var(--bg-card);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .color-option.selected {
+            border-color: var(--text-primary);
+        }
+
+        .color-option .swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .color-option .name {
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Status bar */
+        .status-bar {
+            background: var(--bg-card);
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: rgba(108, 92, 231, 0.2);
+            border: 1px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .instructions strong {
+            color: var(--accent-primary);
+        }
+
+        /* Page info form */
+        .page-info {
+            display: grid;
+            gap: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>🎨 Редактор Зон</h1>
+            <span style="color: var(--text-secondary);">Создайте области для раскрашивания</span>
+        </header>
+
+        <main class="main-content">
+            <!-- Canvas Panel -->
+            <div class="canvas-panel">
+                <div class="canvas-container" id="canvas-container">
+                    <canvas id="editor-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Tools Panel -->
+            <div class="tools-panel">
+                <!-- Tool Selection -->
+                <div class="panel-section">
+                    <h3>🛠️ Инструменты</h3>
+                    <div class="tools-grid">
+                        <button class="tool-btn active" id="tool-draw" title="Рисовать многоугольник (клик по точкам)">
+                            ✏️ Перо
+                        </button>
+                        <button class="tool-btn" id="tool-wand" title="Волшебная палочка (заливка)">
+                            🪄 Заливка
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 14px;">
+                        <label title="Чувствительность заливки">Допуск цвета:
+                            <input type="number" id="wand-tolerance" value="30" min="0" max="255"
+                                style="width: 50px; padding: 2px;">
+                        </label>
+                    </div>
+                    <div style="margin-top: 5px; font-size: 14px;">
+                        <label title="Упрощение контура (меньше = точнее, больше = меньше точек)">Сглаживание:
+                            <input type="number" id="wand-simplify" value="1.0" min="0.1" max="10" step="0.1"
+                                style="width: 50px; padding: 2px;">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Image Loading -->
+                <div class="panel-section">
+                    <h3>📷 Изображение</h3>
+                    <div class="form-group">
+                        <input type="file" id="image-input" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Или выберите из папки:</label>
+                        <select id="preset-images">
+                            <option value="">-- Выберите --</option>
+                            <option value="images/bells.png">Колокольчики (images/bells.png)</option>
+                            <option value="images/tree.png">Ёлка (images/tree.png)</option>
+                            <option value="images/sock.png">Носок (images/sock.png)</option>
+                            <option value="images/wreath.png">Венок (images/wreath.png)</option>
+                            <option value="images/candle.png">Свеча (images/candle.png)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Page Settings -->
+                <div class="panel-section">
+                    <h3>⚙️ Настройки страницы</h3>
+                    <div class="page-info">
+                        <div class="form-group">
+                            <label>ID страницы:</label>
+                            <input type="text" id="page-id" placeholder="например: bells">
+                        </div>
+                        <div class="form-group">
+                            <label>Название:</label>
+                            <input type="text" id="page-title" placeholder="например: Колокольчики">
+                        </div>
+                        <div class="form-group">
+                            <label>Инструкция:</label>
+                            <input type="text" id="page-instruction" placeholder="Раскрась по среде солей">
+                        </div>
+                        <div class="form-group">
+                            <label>Тип палитры:</label>
+                            <select id="palette-type">
+                                <option value="saltEnvironment">Среда солей</option>
+                                <option value="flameColors">Цвета пламени</option>
+                                <option value="substanceColors">Цвета веществ</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="show-labels" style="width: auto;">
+                            <label for="show-labels" style="margin: 0; cursor: pointer;">Показывать метки
+                                (формулы)</label>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- Manual Controls -->
+                <div class="panel-section">
+                    <h3>✍️ Управление</h3>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-block" id="undo-btn">
+                            ↩️ Отменить точку (Ctrl+Z)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section" style="margin-top: 10px;">
+                    <button class="btn btn-success btn-block" id="finish-zone-btn">
+                        ✅ Завершить зону (Enter)
+                    </button>
+                    <button class="btn btn-danger btn-block" id="cancel-zone-btn" style="margin-top: 8px;">
+                        ❌ Отменить зону (Esc)
+                    </button>
+                </div>
+                <!-- Drawing Tools -->
+                <div class="panel-section">
+                    <h3>✏️ Рисование зоны</h3>
+                    <div class="instructions">
+                        <strong>Инструкция:</strong><br>
+                        1. Кликайте по углам области<br>
+                        2. Введите формулу и выберите цвет<br>
+                        3. Нажмите "Завершить зону"
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <input type="text" id="current-formula" placeholder="Название зоны (например: FeCl₃)">
+                    </div>
+                    <div class="form-group">
+                        <label>Правильный цвет:</label>
+                        <div class="color-grid" id="color-grid">
+                            <!-- Colors will be inserted dynamically -->
+                        </div>
+                    </div>
+                    <div class="btn-group" style="margin-top: 12px;">
+                        <button class="btn btn-success" id="finish-zone-btn-form">✓ Завершить зону</button>
+                        <button class="btn btn-danger" id="cancel-zone-btn-form">✕ Отмена</button>
+                    </div>
+                </div>
+
+                <!-- Zone List -->
+                <div class="panel-section">
+                    <h3>📋 Созданные зоны (<span id="zone-count">0</span>)</h3>
+                    <div class="zone-list" id="zone-list">
+                        <p style="color: var(--text-secondary); font-size: 0.85rem;">
+                            Пока нет зон. Нажмите на изображение, чтобы начать.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Export -->
+                <div class="panel-section">
+                    <h3>💾 Экспорт</h3>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-block" id="export-js-btn"
+                            style="background: linear-gradient(135deg, #e17055, #fab1a0);">
+                            📥 Скачать JS (для игры)
+                        </button>
+                    </div>
+                    <div class="btn-group" style="margin-top: 8px;">
+                        <button class="btn btn-secondary btn-block" id="export-json-btn">
+                            📥 Скачать JSON (резерв)
+                        </button>
+                    </div>
+                    <div class="btn-group" style="margin-top: 8px;">
+                        <button class="btn btn-secondary btn-block" id="copy-json-btn">
+                            📋 Копировать в буфер
+                        </button>
+                    </div>
+                    <div class="btn-group" style="margin-top: 8px;">
+                        <button class="btn btn-secondary btn-block" id="load-json-btn">
+                            📂 Загрузить JSON
+                        </button>
+                        <input type="file" id="json-input" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span id="status-text">Загрузите изображение для начала работы</span>
+            <span id="cursor-pos">X: 0, Y: 0</span>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // Zone Editor Application
+        // ========================================
+
+        class ZoneEditor {
+            constructor() {
+                this.canvas = document.getElementById('editor-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.image = null;
+                this.zones = [];
+                this.currentPoints = [];
+                this.selectedZoneIndex = -1;
+                this.selectedColor = null;
+
+                this.selectedColor = null;
+
+                // DOM Elements Reference
+                this.elements = {
+                    canvas: document.getElementById('editor-canvas'),
+                    paletteType: document.getElementById('palette-type'),
+                    finishZoneBtn: document.getElementById('finish-zone-btn'),
+                    cancelZoneBtn: document.getElementById('cancel-zone-btn'),
+                    undoBtn: document.getElementById('undo-btn'),
+                    exportJsBtn: document.getElementById('export-js-btn'),
+                    exportJsonBtn: document.getElementById('export-json-btn'),
+                    copyJsonBtn: document.getElementById('copy-json-btn'),
+                    loadJsonBtn: document.getElementById('load-json-btn'),
+                    jsonInput: document.getElementById('json-input')
+                };
+
+                // Color palettes
+                this.palettes = {
+                    saltEnvironment: [
+                        { key: 'acidic', color: '#E74C3C', label: 'Кислая' },
+                        { key: 'neutral', color: '#2ECC71', label: 'Нейтральная' },
+                        { key: 'alkaline', color: '#F1C40F', label: 'Щелочная' }
+                    ],
+                    flameColors: [
+                        { key: 'yellow', color: '#FFD700', label: 'Жёлтый' },
+                        { key: 'violet', color: '#9B59B6', label: 'Фиолетовый' },
+                        { key: 'red', color: '#C0392B', label: 'Красный' },
+                        { key: 'green', color: '#27AE60', label: 'Зелёный' },
+                        { key: 'orange', color: '#E67E22', label: 'Оранжевый' },
+                        { key: 'colorless', color: '#D5D5D5', label: 'Бесцветный' }
+                    ],
+                    substanceColors: [
+                        { key: 'white', color: '#FFFFFF', label: 'Белый' },
+                        { key: 'black', color: '#2C3E50', label: 'Чёрный' },
+                        { key: 'green', color: '#27AE60', label: 'Зелёный' },
+                        { key: 'brown', color: '#8B4513', label: 'Коричневый' },
+                        { key: 'yellow', color: '#F1C40F', label: 'Жёлтый' },
+                        { key: 'orange', color: '#E67E22', label: 'Оранжевый' },
+                        { key: 'red', color: '#E74C3C', label: 'Красный' },
+                        { key: 'blue', color: '#3498DB', label: 'Синий' },
+                        { key: 'violet', color: '#9B59B6', label: 'Фиолетовый' },
+                        // New colors
+                        { key: 'red_deep', color: '#D50D09', label: 'Тёмно-красный' },
+                        { key: 'red_orange', color: '#EF3F0E', label: 'Красно-оранжевый' },
+                        { key: 'pink_hot', color: '#FB4B82', label: 'Ярко-розовый' },
+                        { key: 'red_bordeaux', color: '#A01A14', label: 'Бордовый' },
+                        { key: 'pink_pale', color: '#C2756E', label: 'Бледно-розовый' },
+                        { key: 'orange_bright', color: '#FE5D00', label: 'Ярко-оранжевый' },
+                        { key: 'yellow_bright', color: '#FDE801', label: 'Ярко-жёлтый' },
+                        { key: 'orange_burnt', color: '#E36820', label: 'Рыжий' },
+                        { key: 'salmon', color: '#E28366', label: 'Лососевый' },
+                        { key: 'sand', color: '#F2DE97', label: 'Песочный' },
+                        { key: 'green_forest', color: '#206A16', label: 'Лесной зелёный' },
+                        { key: 'green_bright', color: '#44D162', label: 'Ярко-зелёный' },
+                        { key: 'green_pale', color: '#78AC62', label: 'Бледно-зелёный' },
+                        { key: 'mint', color: '#BAFDCE', label: 'Мятный' },
+                        { key: 'turquoise', color: '#3FE5B9', label: 'Бирюзовый' },
+                        { key: 'blue_bright', color: '#1152C2', label: 'Ярко-синий' },
+                        { key: 'sky_blue', color: '#288CDE', label: 'Голубой' },
+                        { key: 'pale_blue', color: '#B9E3D0', label: 'Бледно-голубой' },
+                        { key: 'lilac', color: '#9C7AAC', label: 'Сиреневый' },
+                        { key: 'purple_deep', color: '#905AAE', label: 'Тёмно-фиолетовый' },
+                        { key: 'brown_red', color: '#6B2616', label: 'Красно-коричневый' },
+                        { key: 'brown_dark', color: '#4B1C0A', label: 'Тёмно-коричневый' },
+                        { key: 'chocolate', color: '#57290F', label: 'Шоколадный' },
+                        { key: 'gray_light', color: '#A6A6A6', label: 'Светло-серый' }
+                    ]
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.updateColorGrid();
+            }
+
+            bindEvents() {
+                // Image loading
+                document.getElementById('image-input').addEventListener('change', (e) => {
+                    this.loadImageFromFile(e.target.files[0]);
+                });
+
+                document.getElementById('preset-images').addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        this.loadImageFromPath(e.target.value);
+                    }
+                });
+
+                // Canvas events
+                this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.elements.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+                this.elements.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.elements.canvas.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    this.undoPoint();
+                });
+
+                // Tool selection
+                document.getElementById('tool-draw').addEventListener('click', () => this.selectTool('draw'));
+                document.getElementById('tool-wand').addEventListener('click', () => this.selectTool('wand'));
+
+                // Action buttons
+                document.getElementById('undo-btn').addEventListener('click', () => this.undoPoint());
+                document.getElementById('cancel-zone-btn').addEventListener('click', () => this.cancelZone());
+                document.getElementById('cancel-zone-btn-form').addEventListener('click', () => this.cancelZone());
+
+                // Palette type change
+                this.elements.paletteType.addEventListener('change', () => {
+                    this.updateColorGrid();
+                });
+
+                // Show labels toggle
+                document.getElementById('show-labels')?.addEventListener('change', () => {
+                    this.redraw();
+                });
+
+                // Zone actions
+                this.elements.finishZoneBtn.addEventListener('click', () => this.finishZone());
+                document.getElementById('finish-zone-btn-form').addEventListener('click', () => this.finishZone());
+
+                // Export actions
+                this.elements.exportJsBtn?.addEventListener('click', () => this.exportJS());
+                this.elements.exportJsonBtn.addEventListener('click', () => this.exportJSON());
+                this.elements.copyJsonBtn.addEventListener('click', () => this.copyJSON());
+                this.elements.loadJsonBtn.addEventListener('click', () => {
+                    this.elements.jsonInput.click();
+                });
+                this.elements.jsonInput.addEventListener('change', (e) => this.loadJSON(e.target.files[0]));
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+            }
+
+            selectTool(tool) {
+                this.currentTool = tool;
+                document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+                if (tool === 'draw') {
+                    document.getElementById('tool-draw').classList.add('active');
+                    this.elements.canvas.style.cursor = 'crosshair';
+                } else if (tool === 'wand') {
+                    document.getElementById('tool-wand').classList.add('active');
+                    this.elements.canvas.style.cursor = 'alias'; // Wand cursor
+                }
+            }
+
+            handleKeyDown(e) {
+                if (e.key === 'Escape') this.cancelZone();
+                if (e.key === 'Enter') this.finishZone();
+                if (e.key === 'z' && e.ctrlKey) this.undoPoint();
+                if (e.key === 'Delete' && this.selectedZoneIndex >= 0) {
+                    this.deleteZone(this.selectedZoneIndex);
+                }
+            }
+
+            // ========================================
+            // Image Loading
+            // ========================================
+
+            loadImageFromFile(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.loadImageFromData(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            loadImageFromPath(path) {
+                this.loadImageFromData(path);
+            }
+
+            loadImageFromData(src, file = null) {
+                this.image = new Image();
+                this.image.onload = () => {
+                    this.elements.canvas.width = this.image.width;
+                    this.elements.canvas.height = this.image.height;
+                    this.imageLoaded = true;
+                    this.redraw();
+                    const fileName = file ? file.name : src.substring(src.lastIndexOf('/') + 1);
+                    this.updateStatus(`Изображение загружено: ${fileName} (${this.image.width}x${this.image.height})`);
+                };
+                this.image.onerror = () => {
+                    this.updateStatus('Ошибка загрузки изображения');
+                };
+                this.image.src = src;
+            }
+
+            // ========================================
+            // Canvas Drawing
+            // ========================================
+
+            redraw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw image
+                if (this.image) {
+                    this.ctx.drawImage(this.image, 0, 0);
+                }
+
+                // Draw existing zones
+                this.zones.forEach((zone, index) => {
+                    this.drawZone(zone, index === this.selectedZoneIndex);
+                });
+
+                // Draw current polygon in progress
+                if (this.currentPoints.length > 0) {
+                    this.drawCurrentPolygon();
+                }
+            }
+
+            drawZone(zone, isSelected) {
+                const palette = this.palettes[document.getElementById('palette-type').value];
+                const colorInfo = palette.find(c => c.key === zone.correctColor);
+                const color = colorInfo ? colorInfo.color : '#888888';
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(zone.points[0][0], zone.points[0][1]);
+                for (let i = 1; i < zone.points.length; i++) {
+                    this.ctx.lineTo(zone.points[i][0], zone.points[i][1]);
+                }
+                this.ctx.closePath();
+
+                // Fill with semi-transparent color
+                this.ctx.fillStyle = color + '40';
+                this.ctx.fill();
+
+                // Stroke
+                this.ctx.strokeStyle = isSelected ? '#ffffff' : color;
+                this.ctx.lineWidth = isSelected ? 3 : 2;
+                this.ctx.stroke();
+
+                // Draw formula label only if enabled
+                const showLabels = document.getElementById('show-labels')?.checked;
+                if (showLabels) {
+                    const center = this.getPolygonCenter(zone.points);
+                    this.ctx.fillStyle = '#000000';
+                    this.ctx.font = 'bold 14px Nunito';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+
+                    // Background for text
+                    const textWidth = this.ctx.measureText(zone.formula).width;
+                    this.ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                    this.ctx.fillRect(center.x - textWidth / 2 - 4, center.y - 10, textWidth + 8, 20);
+
+                    this.ctx.fillStyle = '#000000';
+                    this.ctx.fillText(zone.formula, center.x, center.y);
+                }
+            }
+
+            drawCurrentPolygon() {
+                if (this.currentPoints.length === 0) return;
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.currentPoints[0][0], this.currentPoints[0][1]);
+                for (let i = 1; i < this.currentPoints.length; i++) {
+                    this.ctx.lineTo(this.currentPoints[i][0], this.currentPoints[i][1]);
+                }
+
+                this.ctx.strokeStyle = '#00ff00';
+                this.ctx.lineWidth = 2;
+                this.ctx.setLineDash([5, 5]);
+                this.ctx.stroke();
+                this.ctx.setLineDash([]);
+
+                // Draw points
+                this.currentPoints.forEach((point, index) => {
+                    this.ctx.beginPath();
+                    this.ctx.arc(point[0], point[1], 3, 0, Math.PI * 2);
+                    this.ctx.fillStyle = index === 0 ? '#00ff00' : '#ffffff';
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = '#000000';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                });
+            }
+
+            getPolygonCenter(points) {
+                let x = 0, y = 0;
+                points.forEach(p => {
+                    x += p[0];
+                    y += p[1];
+                });
+                return { x: x / points.length, y: y / points.length };
+            }
+
+            // ========================================
+            // Canvas Events
+            // ========================================
+
+            // ==========================================
+            // Magic Wand Logic (Flood Fill + Tracing)
+            // ==========================================
+
+            performMagicWand(startX, startY) {
+                try {
+                    const ctx = this.ctx;
+                    const w = this.elements.canvas.width;
+                    const h = this.elements.canvas.height;
+                    const imageData = ctx.getImageData(0, 0, w, h);
+                    const data = imageData.data;
+
+                    // Helper to get pixel color
+                    const getPixel = (x, y) => {
+                        if (x < 0 || y < 0 || x >= w || y >= h) return [-1, -1, -1, -1];
+                        const idx = (y * w + x) * 4;
+                        return [data[idx], data[idx + 1], data[idx + 2], data[idx + 3]];
+                    };
+
+                    const startColor = getPixel(startX, startY);
+                    const tolerance = parseInt(document.getElementById('wand-tolerance')?.value || '30');
+
+                    // Color distance function (simple Euclidean squared for speed)
+                    const colorMatch = (c1, c2) => {
+                        const dr = c1[0] - c2[0];
+                        const dg = c1[1] - c2[1];
+                        const db = c1[2] - c2[2];
+                        return (dr * dr + dg * dg + db * db) <= (tolerance * tolerance * 3);
+                    };
+
+                    // 1. Flood Fill to create a mask (visited set)
+                    const visited = new Uint8Array(w * h); // 0 = unvisited, 1 = mask
+                    const stack = [[startX, startY]];
+
+                    // Bounds of the filled area
+                    let minX = w, maxX = 0, minY = h, maxY = 0;
+
+                    while (stack.length > 0) {
+                        const [cx, cy] = stack.pop();
+                        const idx = cy * w + cx;
+
+                        if (visited[idx]) continue;
+                        visited[idx] = 1;
+
+                        if (cx < minX) minX = cx;
+                        if (cx > maxX) maxX = cx;
+                        if (cy < minY) minY = cy;
+                        if (cy > maxY) maxY = cy;
+
+                        const neighbors = [
+                            [cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]
+                        ];
+
+                        for (const [nx, ny] of neighbors) {
+                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                                const nIdx = ny * w + nx;
+                                if (!visited[nIdx]) {
+                                    if (colorMatch(getPixel(nx, ny), startColor)) {
+                                        stack.push([nx, ny]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 2. Trace Contour (Moore-Neighbor Tracing)
+                    // Find a starting boundary pixel (scan filled area)
+                    let startPoint = null;
+                    outerLoop:
+                    for (let y = minY; y <= maxY; y++) {
+                        for (let x = minX; x <= maxX; x++) {
+                            if (visited[y * w + x]) {
+                                startPoint = { x, y };
+                                break outerLoop;
+                            }
+                        }
+                    }
+
+                    if (!startPoint) return;
+
+                    const points = [];
+                    // Directions: N, NE, E, SE, S, SW, W, NW
+                    const dirs = [
+                        { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 1, y: 1 },
+                        { x: 0, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }
+                    ];
+
+                    // Helper to check mask
+                    const isMask = (x, y) => (x >= 0 && x < w && y >= 0 && y < h) ? visited[y * w + x] : 0;
+
+                    let cx = startPoint.x;
+                    let cy = startPoint.y;
+                    let p_dir = 6; // Start coming from West (since we scanned from left)
+                    const startPos = { x: cx, y: cy };
+                    let iterations = 0;
+                    const maxIter = w * h; // Safety break
+
+                    do {
+                        points.push([cx, cy]);
+                        let found = false;
+
+                        // Moore neighbor tracing: start checking neighbors from (backtrack + 1) in clockwise order.
+                        // Ideally checking 8 neighbors. 
+                        // To keep it simple and robust for this use case:
+                        for (let i = 0; i < 8; i++) {
+                            const check_i = (p_dir + 1 + i) % 8;
+                            const dx = dirs[check_i].x;
+                            const dy = dirs[check_i].y;
+
+                            if (isMask(cx + dx, cy + dy)) {
+                                cx += dx;
+                                cy += dy;
+                                // New backtrack direction pointing to previous pixel (cx-dx, cy-dy)
+                                // Neighbor from new is (check_i + 4) % 8
+                                p_dir = (check_i + 4) % 8;
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) break; // Isolated point
+                        iterations++;
+                    } while ((cx !== startPos.x || cy !== startPos.y) && iterations < maxIter);
+
+                    // 3. Simplify Polygon using Ramer-Douglas-Peucker
+                    const simplify = (pts, epsilon) => {
+                        if (pts.length < 3) return pts;
+
+                        let dmax = 0;
+                        let index = 0;
+                        const end = pts.length - 1;
+
+                        const lineDist = (p, p1, p2) => {
+                            let num = Math.abs((p2[1] - p1[1]) * p[0] - (p2[0] - p1[0]) * p[1] + p2[0] * p1[1] - p2[1] * p1[0]);
+                            let den = Math.sqrt(Math.pow(p2[1] - p1[1], 2) + Math.pow(p2[0] - p1[0], 2));
+                            return den === 0 ? 0 : num / den;
+                        };
+
+                        for (let i = 1; i < end; i++) {
+                            const d = lineDist(pts[i], pts[0], pts[end]);
+                            if (d > dmax) {
+                                index = i;
+                                dmax = d;
+                            }
+                        }
+
+                        if (dmax > epsilon) {
+                            const rec1 = simplify(pts.slice(0, index + 1), epsilon);
+                            const rec2 = simplify(pts.slice(index), epsilon);
+                            return rec1.slice(0, rec1.length - 1).concat(rec2);
+                        } else {
+                            return [pts[0], pts[end]];
+                        }
+                    };
+
+                    // Filter exact sequential duplicates
+                    const uniquePoints = points.filter((p, i) => i === 0 || (p[0] !== points[i - 1][0] || p[1] !== points[i - 1][1]));
+
+                    // Apply simplification
+                    const simplifyVal = parseFloat(document.getElementById('wand-simplify')?.value || '1.0');
+                    const simplifiedPoints = simplify(uniquePoints, simplifyVal);
+
+                    if (simplifiedPoints.length > 2) {
+                        this.currentPoints = simplifiedPoints;
+                        this.redraw();
+                        this.updateStatus('Зона выделена: ' + simplifiedPoints.length + ' точек. Нажмите "Завершить зону".');
+                    } else {
+                        // Restore previous points if any (optional, but good UX)
+                        // For now just warn
+                        this.updateStatus('Не удалось выделить зону (слишком мало точек). Попробуйте изменить допуск или кликнуть в другое место.');
+                        alert('Не удалось выделить зону. Попробуйте увеличить "Допуск цвета".');
+                    }
+
+                } catch (e) {
+                    console.error(e);
+                    if (e.name === 'SecurityError') {
+                        alert('Ошибка безопасности браузера! Для работы "Волшебной палочки" загрузите изображение через кнопку "Загрузить изображение" (а не выберите из списка), или запустите локальный сервер.');
+                    } else {
+                        alert('Ошибка алгоритма: ' + e.message);
+                    }
+                }
+            }
+
+            handleCanvasClick(e) {
+                if (!this.imageLoaded) return;
+
+                if (document.querySelector('.zone-item.selected')) return;
+
+                const rect = this.elements.canvas.getBoundingClientRect();
+                const scaleX = this.elements.canvas.width / rect.width;
+                const scaleY = this.elements.canvas.height / rect.height;
+                const x = Math.round((e.clientX - rect.left) * scaleX);
+                const y = Math.round((e.clientY - rect.top) * scaleY);
+
+                if (this.currentTool === 'wand') {
+                    if (this.currentPoints.length > 0) {
+                        // Confirm reset?
+                        // For now just clear and start new
+                        this.currentPoints = [];
+                    }
+                    this.performMagicWand(x, y);
+                } else {
+                    this.addPoint(x, y);
+                }
+            }
+
+            addPoint(x, y) {
+                this.currentPoints.push([x, y]);
+                this.redraw();
+                this.updateStatus(`Точка добавлена: (${x}, ${y}). Всего точек: ${this.currentPoints.length}`);
+            }
+
+            handleMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                const x = Math.round((e.clientX - rect.left) * scaleX);
+                const y = Math.round((e.clientY - rect.top) * scaleY);
+                document.getElementById('cursor-pos').textContent = `X: ${x}, Y: ${y}`;
+            }
+
+            undoPoint() {
+                if (this.currentPoints.length > 0) {
+                    this.currentPoints.pop();
+                    this.redraw();
+                    this.updateStatus(`Точка удалена. Осталось точек: ${this.currentPoints.length}`);
+                }
+            }
+
+            // ========================================
+            // Zone Management
+            // ========================================
+
+            finishZone() {
+                if (this.currentPoints.length < 3) {
+                    this.updateStatus('Нужно минимум 3 точки для создания зоны!');
+                    return;
+                }
+
+                const formula = document.getElementById('current-formula').value.trim();
+                if (!formula) {
+                    this.updateStatus('Введите формулу для зоны!');
+                    document.getElementById('current-formula').focus();
+                    return;
+                }
+
+                if (!this.selectedColor) {
+                    this.updateStatus('Выберите правильный цвет!');
+                    return;
+                }
+
+                const zone = {
+                    id: formula.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Date.now(),
+                    formula: formula,
+                    correctColor: this.selectedColor,
+                    points: [...this.currentPoints]
+                };
+
+                this.zones.push(zone);
+                this.currentPoints = [];
+                this.selectedColor = null;
+                document.getElementById('current-formula').value = '';
+
+                // Clear color selection
+                document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+
+                this.redraw();
+                this.updateZoneList();
+                this.updateStatus(`Зона "${formula}" создана! Всего зон: ${this.zones.length}`);
+            }
+
+            cancelZone() {
+                this.currentPoints = [];
+                this.redraw();
+                this.updateStatus('Создание зоны отменено');
+            }
+
+            deleteZone(index) {
+                if (index >= 0 && index < this.zones.length) {
+                    const formula = this.zones[index].formula;
+                    this.zones.splice(index, 1);
+                    this.selectedZoneIndex = -1;
+                    this.redraw();
+                    this.updateZoneList();
+                    this.updateStatus(`Зона "${formula}" удалена`);
+                }
+            }
+
+            selectZone(index) {
+                this.selectedZoneIndex = index;
+                this.redraw();
+            }
+
+            // ========================================
+            // UI Updates
+            // ========================================
+
+            updateColorGrid() {
+                const paletteType = document.getElementById('palette-type').value;
+                const palette = this.palettes[paletteType];
+                const container = document.getElementById('color-grid');
+
+                container.innerHTML = palette.map(color => `
+                    <div class="color-option" data-color-key="${color.key}">
+                        <div class="swatch" style="background-color: ${color.color}"></div>
+                        <span class="name">${color.label}</span>
+                    </div>
+                `).join('');
+
+                // Bind click events
+                container.querySelectorAll('.color-option').forEach(el => {
+                    el.addEventListener('click', () => {
+                        container.querySelectorAll('.color-option').forEach(e => e.classList.remove('selected'));
+                        el.classList.add('selected');
+                        this.selectedColor = el.dataset.colorKey;
+                    });
+                });
+            }
+
+            updateZoneList() {
+                const container = document.getElementById('zone-list');
+                const paletteType = document.getElementById('palette-type').value;
+                const palette = this.palettes[paletteType];
+
+                document.getElementById('zone-count').textContent = this.zones.length;
+
+                if (this.zones.length === 0) {
+                    container.innerHTML = `
+                        <p style="color: var(--text-secondary); font-size: 0.85rem;">
+                            Пока нет зон. Нажмите на изображение, чтобы начать.
+                        </p>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = this.zones.map((zone, index) => {
+                    const colorInfo = palette.find(c => c.key === zone.correctColor) || { color: '#888' };
+                    return `
+                        <div class="zone-item ${index === this.selectedZoneIndex ? 'selected' : ''}" 
+                             data-index="${index}">
+                            <div class="zone-color" style="background-color: ${colorInfo.color}"></div>
+                            <div class="zone-info">
+                                <div class="zone-formula">${zone.formula}</div>
+                                <div class="zone-points">${zone.points.length} точек</div>
+                            </div>
+                            <button class="zone-delete" data-index="${index}">🗑️</button>
+                        </div>
+                    `;
+                }).join('');
+
+                // Bind events
+                container.querySelectorAll('.zone-item').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('zone-delete')) {
+                            this.selectZone(parseInt(el.dataset.index));
+                            this.updateZoneList();
+                        }
+                    });
+                });
+
+                container.querySelectorAll('.zone-delete').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.deleteZone(parseInt(el.dataset.index));
+                    });
+                });
+            }
+
+            updateStatus(text) {
+                document.getElementById('status-text').textContent = text;
+            }
+
+            // ========================================
+            // Export / Import
+            // ========================================
+
+            getExportData() {
+                return {
+                    id: document.getElementById('page-id').value || 'custom_page',
+                    title: document.getElementById('page-title').value || 'Новая раскраска',
+                    instruction: document.getElementById('page-instruction').value || 'Раскрась по правилам',
+                    palette: document.getElementById('palette-type').value,
+                    icon: '🎨',
+                    zones: this.zones.map(zone => ({
+                        id: zone.id,
+                        formula: zone.formula,
+                        correctColor: zone.correctColor,
+                        points: zone.points
+                    }))
+                };
+            }
+
+            exportJS() {
+                const data = this.getExportData();
+                const json = JSON.stringify(data, null, 2);
+                const jsContent = `window.registerPage(${json});`;
+
+                const blob = new Blob([jsContent], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = (data.id || 'coloring_page') + '.js';
+                a.click();
+
+                URL.revokeObjectURL(url);
+                this.updateStatus('JS файл скачан: ' + a.download);
+            }
+
+            exportJSON() {
+                const data = this.getExportData();
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = (data.id || 'coloring_page') + '.json';
+                a.click();
+
+                URL.revokeObjectURL(url);
+                this.updateStatus('JSON файл скачан: ' + a.download);
+            }
+
+            copyJSON() {
+                const data = this.getExportData();
+                const json = JSON.stringify(data, null, 2);
+                navigator.clipboard.writeText(json).then(() => {
+                    this.updateStatus('JSON скопирован в буфер обмена!');
+                }).catch(() => {
+                    this.updateStatus('Ошибка копирования');
+                });
+            }
+
+            loadJSON(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        this.zones = data.zones || [];
+
+                        document.getElementById('page-id').value = data.id || '';
+                        document.getElementById('page-title').value = data.title || '';
+                        document.getElementById('page-instruction').value = data.instruction || '';
+                        document.getElementById('palette-type').value = data.palette || 'saltEnvironment';
+
+                        this.updateColorGrid();
+                        this.updateZoneList();
+                        this.redraw();
+                        this.updateStatus(`Загружено ${this.zones.length} зон из JSON`);
+                    } catch (err) {
+                        this.updateStatus('Ошибка чтения JSON: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Initialize editor
+        document.addEventListener('DOMContentLoaded', () => {
+            window.editor = new ZoneEditor();
+        });
+    </script>
+</body>
+
+</html>

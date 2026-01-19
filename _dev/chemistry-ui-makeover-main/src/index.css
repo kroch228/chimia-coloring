@@ -1,0 +1,251 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Breaking Bad Chemistry Theme - Design System */
+@layer base {
+  :root {
+    /* Breaking Bad dark industrial theme */
+    --background: 80 10% 5%;
+    --foreground: 55 100% 50%;
+    
+    --card: 80 15% 8%;
+    --card-foreground: 55 90% 60%;
+    
+    --popover: 80 15% 8%;
+    --popover-foreground: 55 90% 60%;
+    
+    /* Hazmat yellow - iconic BB color */
+    --primary: 55 100% 50%;
+    --primary-foreground: 80 10% 5%;
+    
+    --secondary: 120 60% 25%;
+    --secondary-foreground: 55 100% 50%;
+    
+    --muted: 80 10% 15%;
+    --muted-foreground: 55 30% 50%;
+    
+    --accent: 120 70% 35%;
+    --accent-foreground: 55 100% 50%;
+    
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 120 60% 40%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 55 100% 50%;
+    --warning-foreground: 80 10% 5%;
+
+    --border: 55 30% 20%;
+    --input: 80 10% 15%;
+    --ring: 55 100% 50%;
+
+    --radius: 0.25rem;
+    
+    /* Breaking Bad specific */
+    --bb-yellow: 55 100% 50%;
+    --bb-green: 120 60% 30%;
+    --bb-dark: 80 10% 5%;
+    --bb-toxic: 90 100% 40%;
+    --bb-hazard: 45 100% 50%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(55 100% 50%) 0%, hsl(45 100% 40%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(120 60% 30%) 0%, hsl(120 70% 40%) 100%);
+    --gradient-error: linear-gradient(135deg, hsl(0 70% 50%) 0%, hsl(0 70% 60%) 100%);
+    --gradient-toxic: linear-gradient(135deg, hsl(90 100% 35%) 0%, hsl(120 60% 30%) 100%);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 20px hsla(55, 100%, 50%, 0.4);
+    --shadow-toxic: 0 0 30px hsla(120, 60%, 30%, 0.5);
+    
+    --sidebar-background: 80 15% 8%;
+    --sidebar-foreground: 55 90% 60%;
+    --sidebar-primary: 55 100% 50%;
+    --sidebar-primary-foreground: 80 10% 5%;
+    --sidebar-accent: 120 60% 25%;
+    --sidebar-accent-foreground: 55 100% 50%;
+    --sidebar-border: 55 30% 20%;
+    --sidebar-ring: 55 100% 50%;
+  }
+
+  .dark {
+    --background: 80 10% 5%;
+    --foreground: 55 100% 50%;
+    --card: 80 15% 8%;
+    --card-foreground: 55 90% 60%;
+    --popover: 80 15% 8%;
+    --popover-foreground: 55 90% 60%;
+    --primary: 55 100% 50%;
+    --primary-foreground: 80 10% 5%;
+    --secondary: 120 60% 25%;
+    --secondary-foreground: 55 100% 50%;
+    --muted: 80 10% 15%;
+    --muted-foreground: 55 30% 50%;
+    --accent: 120 70% 35%;
+    --accent-foreground: 55 100% 50%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 55 30% 20%;
+    --input: 80 10% 15%;
+    --ring: 55 100% 50%;
+    --sidebar-background: 80 15% 8%;
+    --sidebar-foreground: 55 90% 60%;
+    --sidebar-primary: 55 100% 50%;
+    --sidebar-primary-foreground: 80 10% 5%;
+    --sidebar-accent: 120 60% 25%;
+    --sidebar-accent-foreground: 55 100% 50%;
+    --sidebar-border: 55 30% 20%;
+    --sidebar-ring: 55 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    @apply h-full overflow-hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Oswald', sans-serif;
+    background: 
+      radial-gradient(ellipse at top, hsla(120, 60%, 20%, 0.15) 0%, transparent 50%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(80 15% 3%) 100%);
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+  
+  .gradient-toxic {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-toxic);
+  }
+  
+  .gradient-bg-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-bg-success {
+    background: var(--gradient-success);
+  }
+  
+  .gradient-bg-error {
+    background: var(--gradient-error);
+  }
+  
+  .gradient-bg-toxic {
+    background: var(--gradient-toxic);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .shadow-toxic {
+    box-shadow: var(--shadow-toxic);
+  }
+  
+  .font-mono-chem {
+    font-family: 'Roboto Mono', monospace;
+  }
+  
+  /* Hazard stripes pattern */
+  .hazard-stripes {
+    background: repeating-linear-gradient(
+      45deg,
+      hsl(55 100% 50%),
+      hsl(55 100% 50%) 10px,
+      hsl(0 0% 10%) 10px,
+      hsl(0 0% 10%) 20px
+    );
+  }
+  
+  /* Scanlines effect */
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px
+    );
+    pointer-events: none;
+  }
+}
+
+/* Custom scrollbar for BB theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(80 10% 8%);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(55 100% 30%);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(55 100% 50%);
+}
+
+/* Pulse animation for correct zones */
+@keyframes pulse-correct {
+  0%, 100% {
+    box-shadow: 0 0 10px hsla(120, 60%, 40%, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px hsla(120, 60%, 40%, 0.8);
+  }
+}
+
+@keyframes flash-wrong {
+  0%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0.3;
+    border-color: hsl(0 70% 50%);
+  }
+}
+
+@keyframes toxic-pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-correct {
+  animation: pulse-correct 1s ease-in-out infinite;
+}
+
+.animate-flash-wrong {
+  animation: flash-wrong 0.4s ease-in-out;
+}
+
+.animate-toxic {
+  animation: toxic-pulse 3s ease-in-out infinite;
+}
