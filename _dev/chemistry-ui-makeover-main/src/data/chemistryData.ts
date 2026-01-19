@@ -1,7 +1,4 @@
-/**
- * Chemistry Data Module
- * Contains all chemistry knowledge for the coloring app
- */
+
 
 export interface ColorInfo {
   key: string;
@@ -31,9 +28,8 @@ export interface ColoringPage {
   zones: Zone[];
 }
 
-// Color palettes for different coloring page types
+
 export const COLOR_PALETTES: Record<string, ColorPalette> = {
-  // Salt environment (acidic/neutral/alkaline)
   saltEnvironment: {
     id: 'saltEnvironment',
     name: 'Среда солей',
@@ -43,8 +39,6 @@ export const COLOR_PALETTES: Record<string, ColorPalette> = {
       { key: 'alkaline', color: '#F1C40F', label: 'Щелочная' }
     ]
   },
-
-  // Flame colors for metal ions
   flameColors: {
     id: 'flameColors',
     name: 'Цвет пламени',
@@ -57,8 +51,6 @@ export const COLOR_PALETTES: Record<string, ColorPalette> = {
       { key: 'colorless', color: '#D5D5D5', label: 'Бесцветный' }
     ]
   },
-
-  // Substance colors
   substanceColors: {
     id: 'substanceColors',
     name: 'Цвета веществ',

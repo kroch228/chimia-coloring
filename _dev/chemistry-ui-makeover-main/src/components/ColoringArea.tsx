@@ -34,7 +34,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
-  // Load Image
+
   useEffect(() => {
     if (!imagePath) return;
 
@@ -48,7 +48,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
     };
   }, [imagePath]);
 
-  // Handle Resize
+
   useEffect(() => {
     const handleResize = () => {
       if (!containerRef.current || !image) return;
@@ -69,7 +69,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
     return () => window.removeEventListener('resize', handleResize);
   }, [image]);
 
-  // Draw Canvas
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !image) return;
@@ -80,30 +80,20 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
     canvas.width = image.width;
     canvas.height = image.height;
 
-    // Draw Background
+
     ctx.drawImage(image, 0, 0);
 
-    // Draw Colored Zones - SORTED by area (largest first, so smaller nested zones render on top)
-    const calcArea = (points: number[][]): number => {
-      let area = 0;
-      const n = points.length;
-      for (let i = 0; i < n; i++) {
-        const j = (i + 1) % n;
-        area += points[i][0] * points[j][1];
-        area -= points[j][0] * points[i][1];
-      }
-      return Math.abs(area / 2);
-    };
+    // Draw Colored Zones (largest first)
+
 
     const zonesToDraw = zones
       .filter(z => (z as any).points && (z as any).points.length > 0)
       .map(zone => ({
         zone,
-        area: calcArea((zone as any).points)
+        area: getPolygonArea((zone as any).points)
       }))
       .sort((a, b) => b.area - a.area); // Largest first
 
-    // Helper: check if polygon B is contained in polygon A (simplified: check if centroid of B is in A)
     const isZoneContainedIn = (innerPts: number[][], outerPts: number[][]): boolean => {
       // Use centroid of inner zone
       let cx = 0, cy = 0;
@@ -125,7 +115,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
       return inside;
     };
 
-    // Find holes for each zone (ONLY direct children, not grandchildren)
+    // Find holes for each zone
     // A zone B is a direct child of A if B is inside A AND there's no zone C where B is inside C and C is inside A
     const zonesWithHoles = zonesToDraw.map(({ zone, area }) => {
       const outerPts = (zone as any).points;
@@ -247,7 +237,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
     return inside;
   };
 
-  // Calculate polygon area using Shoelace formula (for prioritizing smaller zones)
+
   const getPolygonArea = (points: number[][]): number => {
     let area = 0;
     const n = points.length;
@@ -259,7 +249,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
     return Math.abs(area / 2);
   };
 
-  // Find the smallest zone containing the point (fixes nested zone issue)
+
   const findSmallestZoneAtPoint = (x: number, y: number): string | null => {
     let smallestZone: { id: string; area: number } | null = null;
 
@@ -328,7 +318,7 @@ export const ColoringArea = forwardRef<ColoringAreaRef, ColoringAreaProps>(({
     }
   };
 
-  // Expose drop handler for external use (Touch)
+
   useImperativeHandle(ref, () => ({
     handleExternalDrop: (x: number, y: number, colorKey: string) => {
       processDrop(x, y, colorKey);

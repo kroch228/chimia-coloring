@@ -13,7 +13,7 @@ import {
   getAllPages
 } from "@/data/chemistryData";
 
-// Breaking Bad themed titles
+
 const BB_TITLES: Record<string, string> = {
   'bells': 'Метиламин',
   'tree': 'Кристаллы',
@@ -23,7 +23,7 @@ const BB_TITLES: Record<string, string> = {
 };
 
 const Index = () => {
-  // Use all pages (including custom ones)
+
   const [pages] = useState(getAllPages());
   const coloringAreaRef = useRef<{ handleExternalDrop: (x: number, y: number, c: string) => void }>(null);
 
@@ -41,7 +41,7 @@ const Index = () => {
   const palette = COLOR_PALETTES[currentPage.palette] || COLOR_PALETTES.saltEnvironment;
   const availableColors = useMemo(() => getAvailableColors(currentPage), [currentPage]);
 
-  // Get Breaking Bad themed title
+
   const bbTitle = BB_TITLES[currentPage.id] || currentPage.title;
 
   const handlePrev = useCallback(() => {
@@ -110,7 +110,7 @@ const Index = () => {
       message: allCorrect ? "Чистота 99.1% достигнута!" : "Формула неверна. Повтори синтез!"
     });
 
-    // Auto-hide feedback after delay
+
     setTimeout(() => {
       setFeedback(prev => ({ ...prev, visible: false }));
     }, 2500);
